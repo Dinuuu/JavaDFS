@@ -4,6 +4,7 @@ package dfs;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
@@ -18,13 +19,13 @@ public class DFSFicheroServImpl extends UnicastRemoteObject implements
 
 	RandomAccessFile fichero;
 
-	Map<Double, Usuario> posiciones = new HashMap<Double, Usuario>();
+	Map<Double, Usuario> usuarios = new HashMap<Double, Usuario>();
 
 	public DFSFicheroServImpl(String nombre, String modo, Double usuario)
 			throws IOException {
 
 		this.fichero = new RandomAccessFile(DFSDir + nombre, modo);
-		posiciones.put(usuario, new Usuario(fichero.getFilePointer(), modo));
+		añadirUsuario(usuario, modo);
 
 	}
 
@@ -33,7 +34,7 @@ public class DFSFicheroServImpl extends UnicastRemoteObject implements
 			IOException {
 
 		byte[] resp = new byte[read];
-		Usuario usu = posiciones.get(usuario);
+		Usuario usu = usuarios.get(usuario);
 		if (usu.getModo().contains("r")) {
 			fichero.seek(usu.getPuntero());
 			fichero.read(resp, 0, resp.length);
@@ -47,7 +48,7 @@ public class DFSFicheroServImpl extends UnicastRemoteObject implements
 	public void write(byte[] b, double usuario) throws RemoteException,
 			IOException {
 
-		Usuario usu = posiciones.get(usuario);
+		Usuario usu = usuarios.get(usuario);
 		if (usu.getModo().contains("w")) {
 			fichero.seek(usu.getPuntero());
 			fichero.write(b);
@@ -61,7 +62,7 @@ public class DFSFicheroServImpl extends UnicastRemoteObject implements
 	public void seek(long p, double usuario) throws RemoteException,
 			IOException {
 
-		Usuario usu = posiciones.get(usuario);
+		Usuario usu = usuarios.get(usuario);
 		usu.setPuntero(p);
 
 	}
@@ -69,19 +70,23 @@ public class DFSFicheroServImpl extends UnicastRemoteObject implements
 	@Override
 	public void close(double usuario) throws RemoteException, IOException {
 
-		posiciones.remove(usuario);
-		if (posiciones.isEmpty())
+		usuarios.remove(usuario);
+		if (usuarios.isEmpty())
 			fichero.close();
 	}
 
 	@Override
 	public void añadirUsuario(Double usuario, String modo)
 			throws RemoteException {
-		posiciones.put(usuario, new Usuario(new Long(0), modo));
+		usuarios.put(usuario, new Usuario(new Long(0), modo));
 
 	}
 
-	private class Usuario {
+	private class Usuario implements Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private long puntero;
 		private String modo;
 

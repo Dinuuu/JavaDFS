@@ -2,17 +2,23 @@
 
 package dfs;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 public class DFSCliente {
 
 	DFSServicio serv;
 
-	public DFSCliente(int tamBloque, int tamCache) {
+	public DFSCliente(int tamBloque, int tamCache)
+			throws MalformedURLException, RemoteException, NotBoundException {
 
-		// TODO BUSCAR EN EL SERVIDOR EL SERV
+		String servidor = System.getenv("SERVIDOR");
+		String puerto = System.getenv("PUERTO");
+		this.serv = (DFSServicio) Naming.lookup("rmi://" + servidor + ":"
+				+ puerto + "/DFS");
 	}
 
 	DFSFicheroServ open(String nombre, String modo, Double usuario)
