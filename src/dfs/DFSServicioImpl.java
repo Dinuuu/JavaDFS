@@ -13,10 +13,8 @@ public class DFSServicioImpl extends UnicastRemoteObject implements DFSServicio 
 
 	private static final long serialVersionUID = 1L;
 	private Map<String, DFSFicheroServ> ficheros = new HashMap<String, DFSFicheroServ>();
-	private int puerto;
 
-	public DFSServicioImpl(Integer puerto) throws RemoteException {
-		this.puerto = puerto;
+	public DFSServicioImpl() throws RemoteException {
 	}
 
 	@Override
@@ -25,10 +23,7 @@ public class DFSServicioImpl extends UnicastRemoteObject implements DFSServicio 
 		DFSFicheroServ fichero = null;
 
 		fichero = new DFSFicheroServImpl(nombre, modo, usuario, this);
-		ficheros.put(nombre + usuario.toString(), fichero);
-		Naming.rebind(
-				"rmi://localhost:" + puerto + "/DFS/" + nombre
-						+ usuario.toString(), fichero);
+		ficheros.put(nombre, fichero);
 
 		return fichero;
 

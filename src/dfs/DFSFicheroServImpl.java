@@ -32,7 +32,9 @@ public class DFSFicheroServImpl extends UnicastRemoteObject implements
 			IOException {
 
 		byte[] resp = new byte[read];
-		fichero.read(resp, 0, resp.length);
+		int leidos = fichero.read(resp, 0, resp.length);
+		if (leidos == -1)
+			return null;
 		return resp;
 
 	}

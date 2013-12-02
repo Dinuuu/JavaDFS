@@ -14,13 +14,16 @@ public class DFSFicheroCliente {
 			throws RemoteException, IOException, FileNotFoundException {
 
 		usuario = Math.random();
-		fich = dfs.open(nom, modo, usuario);
+		fich = dfs.getServidor().open(nom, modo, usuario);
 
 	}
 
 	public int read(byte[] b) throws RemoteException, IOException {
 
-		b = fich.read(b.length);
+		byte[] resp = fich.read(b.length);
+		if (resp == null)
+			return -1;
+		System.arraycopy(resp, 0, b, 0, resp.length);
 		return b.length;
 	}
 

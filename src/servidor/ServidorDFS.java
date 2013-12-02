@@ -14,7 +14,7 @@ class ServidorDFS {
 		if (System.getSecurityManager() == null)
 			System.setSecurityManager(new SecurityManager());
 		try {
-			DFSServicio srv = new DFSServicioImpl(args[0]);
+			DFSServicio srv = new DFSServicioImpl();
 			Naming.rebind("rmi://localhost:" + args[0] + "/DFS", srv);
 		} catch (RemoteException e) {
 			System.err.println("Error de comunicacion: " + e.toString());
