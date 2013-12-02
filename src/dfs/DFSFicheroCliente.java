@@ -20,23 +20,23 @@ public class DFSFicheroCliente {
 
 	public int read(byte[] b) throws RemoteException, IOException {
 
-		b = fich.read(b.length, usuario);
+		b = fich.read(b.length);
 		return b.length;
 	}
 
 	public void write(byte[] b) throws RemoteException, IOException {
 
-		fich.write(b, usuario);
+		fich.write(b);
 
 	}
 
 	public void seek(long p) throws RemoteException, IOException {
 
-		fich.seek(p, usuario);
+		fich.seek(p);
 	}
 
 	public void close() throws RemoteException, IOException {
 
-		fich.close(usuario);
+		fich.close();
 	}
 }

@@ -23,17 +23,21 @@ public class DFSServicioImpl extends UnicastRemoteObject implements DFSServicio 
 	public DFSFicheroServ open(String nombre, String modo, Double usuario)
 			throws IOException {
 		DFSFicheroServ fichero = null;
-		if (!ficheros.containsKey(nombre)) {
-			fichero = new DFSFicheroServImpl(nombre, modo, usuario);
-			ficheros.put(nombre, fichero);
-			Naming.rebind("rmi://localhost:" + puerto + "/DFS/" + nombre,
-					fichero);
-		} else {
-			fichero = ficheros.get(nombre);
-			fichero.añadirUsuario(usuario, modo);
 
-		}
+		fichero = new DFSFicheroServImpl(nombre, modo, usuario, this);
+		ficheros.put(nombre + usuario.toString(), fichero);
+		Naming.rebind(
+				"rmi://localhost:" + puerto + "/DFS/" + nombre
+						+ usuario.toString(), fichero);
+
 		return fichero;
 
 	}
+
+	@Override
+	public void close(String nombre, Double usuario) throws RemoteException {
+
+		ficheros.remove(nombre + usuario.toString());
+	}
+
 }

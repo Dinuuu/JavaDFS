@@ -7,18 +7,12 @@ import java.rmi.*;
 
 public interface DFSFicheroServ extends Remote {
 
-	public byte[] read(int read, double usuario) throws RemoteException,
-			IOException;
+	public byte[] read(int read) throws RemoteException, IOException;
 
-	public void write(byte[] b, double usuario) throws RemoteException,
-			IOException;
+	public void write(byte[] b) throws RemoteException, IOException;
 
-	public void seek(long p, double usuario) throws RemoteException,
-			IOException;
+	public void seek(long p) throws RemoteException, IOException;
 
-	public void close(double usuario) throws RemoteException, IOException;
-
-	public void añadirUsuario(Double usuario, String modo)
-			throws RemoteException;
+	public void close() throws RemoteException, IOException;
 
 }
