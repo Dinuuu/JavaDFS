@@ -12,6 +12,7 @@ public class DFSFicheroCliente {
 	private Double usuario;
 	private DFSCliente dfs;
 	private String nombre;
+	private String modo;
 	private long puntero = 0;
 	private Cache cache;
 	private int tamBloque;
@@ -25,6 +26,7 @@ public class DFSFicheroCliente {
 		this.dfs = dfs;
 		cache = dfs.getCache(nom);
 		tamBloque = dfs.getTamBloque();
+		this.modo = modo;
 
 	}
 
@@ -40,11 +42,13 @@ public class DFSFicheroCliente {
 			if ((bloque = cache.getBloque(bloqueInicial + i)) == null) {
 				leidos = readInter(leido, puntero + (i * tamBloque));
 				if (leidos != -1) {
-					System.out.println("METO EN LA CACHE BLOQUE"
-							+ (bloqueInicial + i));
-					System.out.println(new String(leido));
 					bloque = new Bloque((bloqueInicial + i), leido);
-					cache.putBloque(bloque);
+					Bloque aux = cache.putBloque(bloque);
+					if (aux != null && cache.preguntarYDesactivarMod(aux)) {
+						writeInter(aux.obtenerContenido(), aux.obtenerId()
+								* tamBloque);
+					}
+
 				}
 			}
 			if (leidos != -1) {
@@ -61,9 +65,31 @@ public class DFSFicheroCliente {
 
 	public void write(byte[] b) throws RemoteException, IOException {
 
-		fich.write(b);
+		if (!modo.contains("w"))
+			throw new IOException();
+
+		int cantBloques = b.length / tamBloque;
+		int bloqueInicial = (int) (puntero / tamBloque);
+		int i = 0;
+		byte[] cacheInfo = new byte[tamBloque];
+		for (; i < cantBloques; i++) {
+			System.arraycopy(b, i * tamBloque, cacheInfo, 0, tamBloque);
+			Bloque bloque = new Bloque(bloqueInicial + i, cacheInfo);
+			Bloque aux = cache.putBloque(bloque);
+			cache.activarMod(bloque);
+			if (aux != null && cache.preguntarYDesactivarMod(aux)) {
+				writeInter(aux.obtenerContenido(), aux.obtenerId() * tamBloque);
+			}
+		}
 		incrementarPuntero(b.length);
 
+	}
+
+	private void writeInter(byte[] info, long from) throws RemoteException,
+			IOException {
+
+		fich.seek(from);
+		fich.write(info);
 	}
 
 	public void seek(long p) throws RemoteException, IOException {
@@ -73,6 +99,11 @@ public class DFSFicheroCliente {
 	}
 
 	public void close() throws RemoteException, IOException {
+
+		for (Bloque b : cache.listaMod()) {
+			writeInter(b.obtenerContenido(), b.obtenerId() * tamBloque);
+			cache.desactivarMod(b);
+		}
 
 		fich.close();
 	}
