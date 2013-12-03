@@ -49,7 +49,7 @@ public class DFSCliente {
 	}
 
 	public Cache getCache(String nom) {
-		Cache resp;
+		Cache resp = null;
 		if (!caches.containsKey(nom)) {
 			resp = new Cache(tamCache);
 			caches.put(nom, resp);

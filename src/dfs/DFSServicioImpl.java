@@ -3,7 +3,6 @@
 package dfs;
 
 import java.io.IOException;
-import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
@@ -18,21 +17,26 @@ public class DFSServicioImpl extends UnicastRemoteObject implements DFSServicio 
 	}
 
 	@Override
-	public DFSFicheroServ open(String nombre, String modo, Double usuario)
-			throws IOException {
+	public synchronized DFSFicheroServ open(String nombre, String modo,
+			Double usuario) throws IOException {
 		DFSFicheroServ fichero = null;
 
-		fichero = new DFSFicheroServImpl(nombre, modo, usuario, this);
-		ficheros.put(nombre, fichero);
+		if (ficheros.containsKey(nombre)) {
+			fichero = ficheros.get(nombre);
+		} else {
+
+			fichero = new DFSFicheroServImpl(nombre, modo, this);
+			ficheros.put(nombre, fichero);
+		}
 
 		return fichero;
 
 	}
 
 	@Override
-	public void close(String nombre, Double usuario) throws RemoteException {
+	public synchronized void close(String nombre) throws RemoteException {
 
-		ficheros.remove(nombre + usuario.toString());
+		ficheros.remove(nombre);
 	}
 
 }

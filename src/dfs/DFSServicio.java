@@ -11,6 +11,6 @@ public interface DFSServicio extends Remote {
 	DFSFicheroServ open(String nombre, String modo, Double usuario)
 			throws IOException;
 
-	void close(String nombre, Double usuario) throws RemoteException;
+	void close(String nombre) throws RemoteException;
 
 }
