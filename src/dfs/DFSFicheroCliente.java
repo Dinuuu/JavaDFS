@@ -10,8 +10,6 @@ public class DFSFicheroCliente {
 
 	private DFSFicheroServ fich;
 	private Double usuario;
-	private DFSCliente dfs;
-	private String nombre;
 	private String modo;
 	private long puntero = 0;
 	private Cache cache;
@@ -22,9 +20,9 @@ public class DFSFicheroCliente {
 
 		usuario = Math.random();
 		fich = dfs.open(nom, modo, usuario);
-		this.nombre = nom;
-		this.dfs = dfs;
 		cache = dfs.getCache(nom);
+		if (cache.obtenerFecha() < fich.lastModified())
+			cache.vaciar();
 		tamBloque = dfs.getTamBloque();
 		this.modo = modo;
 
@@ -105,6 +103,8 @@ public class DFSFicheroCliente {
 			cache.desactivarMod(b);
 		}
 
+		cache.fijarFecha(fich.lastModified());
+
 		fich.close();
 	}
 
@@ -125,7 +125,6 @@ public class DFSFicheroCliente {
 			return -1;
 		}
 		System.arraycopy(resp, 0, b, 0, tamBloque);
-		System.out.println("Leo desde " + from + " " + new String(b));
 		return b.length;
 
 	}

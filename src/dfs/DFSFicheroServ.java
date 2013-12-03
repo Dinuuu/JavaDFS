@@ -15,4 +15,6 @@ public interface DFSFicheroServ extends Remote {
 
 	public void close() throws RemoteException, IOException;
 
+	public long lastModified() throws RemoteException;
+
 }

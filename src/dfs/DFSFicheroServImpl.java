@@ -2,6 +2,7 @@
 
 package dfs;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.rmi.RemoteException;
@@ -59,5 +60,11 @@ public class DFSFicheroServImpl extends UnicastRemoteObject implements
 		fichero.close();
 		serv.close(this.nombre, this.usuario);
 
+	}
+
+	@Override
+	public long lastModified() throws RemoteException {
+		File fichero = new File(DFSDir + nombre);
+		return fichero.lastModified();
 	}
 }
