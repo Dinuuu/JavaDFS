@@ -63,7 +63,8 @@ public class DFSFicheroCliente {
 		else
 			resp = readSinCache(b);
 
-		incrementarPuntero(resp);
+		if (resp != -1)
+			incrementarPuntero(resp);
 
 		return resp;
 
@@ -103,9 +104,9 @@ public class DFSFicheroCliente {
 				}
 			}
 
-			if (i == 1 && leidos == -1)
+			if (i == 0 && leidos == -1) {
 				return -1;
-
+			}
 			if (leidos != -1) {
 				byte[] info = bloque.obtenerContenido();
 				System.arraycopy(info, 0, b, i * tamBloque, info.length);
@@ -136,8 +137,8 @@ public class DFSFicheroCliente {
 		int cantBloques = b.length / tamBloque;
 		int bloqueInicial = (int) (puntero / tamBloque);
 		int i = 0;
-		byte[] cacheInfo = new byte[tamBloque];
 		for (; i < cantBloques; i++) {
+			byte[] cacheInfo = new byte[tamBloque];
 			System.arraycopy(b, i * tamBloque, cacheInfo, 0, tamBloque);
 			Bloque bloque = new Bloque(bloqueInicial + i, cacheInfo);
 			Bloque aux = cache.putBloque(bloque);
